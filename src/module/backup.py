@@ -1,14 +1,19 @@
 import os.path
-import config.backup as cb
-import rclone
+import module.config.backup as cb
+import module.rclone as rclone
 
 
 def is_backup_dir(path):
-    os.path.exists(os.path.join(path, cb.MAINFILE_PATH))
+    return os.path.exists(os.path.join(path, cb.MAINFILE_PATH))
+
+
+def is_configured():
+    return rclone.remote_exists(cb.REMOTE_NAME)
 
 
 def config():
-    rclone.config()
+    if not is_configured():
+        rclone.config()
 
 
 def init(path):

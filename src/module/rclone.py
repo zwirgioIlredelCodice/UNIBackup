@@ -6,14 +6,14 @@ def shell(commands, get=False):
     if get:
         return subprocess.run(commands,
                               stdout=subprocess.PIPE,
-                              text=True)
+                              text=True).stdout
     else:
         return subprocess.run(commands)
 
 
 def command(kind, args=[], options=[]):
     # if is not an array, make it
-    if not (kind is list):
+    if not (type(kind) == list):
         kind = [kind]
 
     return [c.RCLONE] + kind + args + options
@@ -22,12 +22,25 @@ def command(kind, args=[], options=[]):
 def version():
     version_number_i = 1
 
-    version = shell(command(c.VERSION), get=True).stdout
+    version = shell(command(c.VERSION), get=True)
     version = version.split()
     version = version[version_number_i]
-    version = version.replace('v', '')
-    version = version.replace('.', '', 10)
-    return int(version)
+    return version
+
+
+def listremotes():
+    out = shell(command("listremotes"), get=True)
+    out = out.split()
+    names = []
+    # remove : at the end of each remote
+    for s in out:
+        names.append(s.rstrip(':'))
+
+    return names
+
+
+def remote_exists(remote_name):
+    return remote_name in listremotes()
 
 
 def config():
