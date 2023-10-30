@@ -3,40 +3,69 @@ import module.config.backup as cb
 import module.rclone as rclone
 
 
-def is_backup_dir(path):
+def is_backup_dir(path: str) -> bool:
+    """ check if a directory is configured for unibackup
+
+    Args:
+        path: path to a directory
+
+    Returns:
+        bool: True if is a directory configured for unibackup, False otherwise
+    """
     return os.path.exists(os.path.join(path, cb.MAINFILE_PATH))
 
 
-def is_configured():
+def is_configured() -> bool:
+    """check if is properly configured
+
+    Returns:
+        bool: True if is properly configured, False otherwise
+    """
     return rclone.remote_exists(cb.REMOTE_NAME)
 
 
 def config():
+    """configure csunibackup"""
     if not is_configured():
-        rclone.config()
+        rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
+    else:
+        # if is configured, readd the remote, useful when is expired
+        rclone.remote_delete(cb.REMOTE_NAME)
+        rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
 
 
-def init(path):
+def init(path: str):
+    """ initialize unibakcup in the given path
+
+    Args:
+        path: directory to initialize
+    """
     if not is_backup_dir():
         # create two empty files
-        open(os.path.join(path, cb.MAINFILE_PATH), 'x')
-        open(os.path.join(path, cb.EXCLUDEFILE_PATH), 'x')
+        f1 = open(os.path.join(path, cb.MAINFILE_PATH), 'w')
+        f1.write(cb.MAINFILE_DEFAULT)
+        f1.close()
+        f2 = open(os.path.join(path, cb.EXCLUDEFILE_PATH), 'w')
+        f2.write(cb.EXCLUDEFILE_DEFAULT)
+        f2.close()
 
 
-def get_source_dest(path):
+def get_source_dest(path: str) -> (str, str):
+    """map a local path with a remote path"""
     source = os.path.abspath(path)
     dest = cb.REMOTE_DIR + os.path.basename(path)  # /folder not /folder/
     return source, dest
 
 
-def copy(path):
+def copy(path: str):
+    """perform a rclone.copy of a local path to the remote"""
     if is_backup_dir():
         source, dest = get_source_dest(path)
         rclone.copy(source, dest)
 
 
-def upload(path):
-    """
+def push(path: str):
+    """perform a rclone.sync of a local path to the remote
     similar to git push
     """
     if is_backup_dir():
@@ -44,8 +73,8 @@ def upload(path):
         rclone.sync(source, dest)
 
 
-def download(path):
-    """
+def pull(path):
+    """perform a rclone.sync of remote into a local path
     similar to git pull
     """
     if is_backup_dir():
@@ -54,8 +83,8 @@ def download(path):
 
 
 def sync(path):
-    """
-    similar to git pull
+    """perform a rclone.bisync of a local path to the remote
+    similar to git pull & push
     """
     if is_backup_dir():
         source, dest = get_source_dest(path)

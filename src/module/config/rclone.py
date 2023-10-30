@@ -1,8 +1,8 @@
-import module.config.backup as bc
-
 RCLONE = 'rclone'
 VERSION = '--version'
-CONFIG = ['config', 'create', bc.REMOTE_NAME, bc.REMOTE_TYPE]
+REMOTE_ADD = ['config', 'create']
+REMOTE_DELETE = ['config', 'delete']
+REMOTE_RECONNECT = ['config', 'reconnect']
 COPY = ['copy', '--verbose', '--progress']
 SYNC = ['sync', '--verbose', '--progress']
 BISYNC = ['bisync', '--verbose', '--progress']
