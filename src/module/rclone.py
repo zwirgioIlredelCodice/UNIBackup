@@ -17,7 +17,7 @@ def shell(commands: list[str], get=False):
         return subprocess.run(commands)
 
 
-def command(kind, args=[], options=[]) -> list[str]:
+def command(kind: str | list[str], args=[], options=[]) -> list[str]:
     """ assemble a rclone command
 
     Args:
@@ -103,6 +103,11 @@ def remote_reconnect(remote_name: str):
         remote_name: name of the remote to reconnect
     """
     shell(command(c.REMOTE_RECONNECT, args=[remote_name]))
+
+
+def mkdir(path: str):
+    """Make the path if it doesn't already exist."""
+    shell(command(c.MKDIR, args=[path]))
 
 
 def copy(source: str, dest: str):

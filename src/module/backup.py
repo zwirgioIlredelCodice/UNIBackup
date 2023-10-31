@@ -33,6 +33,9 @@ def config():
         rclone.remote_delete(cb.REMOTE_NAME)
         rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
 
+    # make csunibackup/ path in the remote
+    rclone.mkdir(cb.REMOTE_DIR)
+
 
 def init(path: str):
     """ initialize unibakcup in the given path
@@ -55,6 +58,22 @@ def get_source_dest(path: str) -> (str, str):
     source = os.path.abspath(path)
     dest = cb.REMOTE_DIR + os.path.basename(path)  # /folder not /folder/
     return source, dest
+
+
+def clone(remote_path: str, local_path: str):
+    """clone a remote unibackup directory in a respective local folder
+
+    Args:
+        remote_path: unibackup directory in remote
+                     es. analisi, not unibackup:unibackup/analisi
+        local_path: local path where remote path content is cloned
+                    es. /home/fabio
+    """
+    remote = os.path.join(cb.REMOTE_DIR, remote_path)
+    local = os.path.join(local_path, remote_path)
+    rclone.mkdir(local)
+
+    rclone.copy(remote, local)
 
 
 def copy(path: str):

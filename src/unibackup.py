@@ -25,9 +25,27 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     command = args[0]
 
-    if command == 'info':
+    if command == "info":
         print("rclone version:", rclone.version())
     elif command == 'status':
         print("active:", backup.is_backup_dir(cwd))
+
+    elif command == "config":
+        backup.config()
+    elif command == "init":
+        if backup.is_backup_dir(cwd):
+            print("alredy initialized")
+        else:
+            backup.init(cwd)
+    elif command == "clone":
+        backup.clone(args[1], cwd)
+    elif command == "copy":
+        backup.copy(cwd)
+    elif command == "push":
+        backup.push(cwd)
+    elif command == "pull":
+        backup.pull(cwd)
+    elif command == "sync":
+        backup.sync(cwd)
     else:
         print("help ...")
