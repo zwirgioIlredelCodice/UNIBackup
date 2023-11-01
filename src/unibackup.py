@@ -4,9 +4,25 @@ import os
 import module.rclone as rclone
 import module.backup as backup
 
+# TODO: better help
+HELP = '''
+help ...
+'''
 
 if __name__ == "__main__":
     cwd = os.getcwd()
+
+    import sys
+    if len(sys.argv) <= 1:
+        print(HELP)
+        exit()
+
+    args = sys.argv[1:]
+    command = args[0]
+
+    if command in ['help', '--help', '-h']:
+        print(HELP)
+        exit()
 
     if not backup.is_configured():
         # TODO: better error
@@ -16,14 +32,6 @@ if __name__ == "__main__":
         # TODO: better error
         print("unibackup is not initialize in this directory,\n\trun ...")
         exit()
-
-    import sys
-    if len(sys.argv) <= 1:
-        print("help ...")
-        exit()
-
-    args = sys.argv[1:]
-    command = args[0]
 
     if command == "info":
         print("rclone version:", rclone.version())
@@ -48,4 +56,4 @@ if __name__ == "__main__":
     elif command == "sync":
         backup.sync(cwd)
     else:
-        print("help ...")
+        print(HELP)
