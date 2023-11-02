@@ -1,5 +1,5 @@
 REMOTE_NAME = 'unibackup'
-REMOTE_DIR = REMOTE_NAME + ':unibackup'
+REMOTE_DIR = REMOTE_NAME + ':unibackup/current/'
 REMOTE_TYPE = 'onedrive'
 
 MAINFILE_NAME = '.unibackup'

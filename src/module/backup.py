@@ -43,7 +43,7 @@ def init(path: str):
     Args:
         path: directory to initialize
     """
-    if not is_backup_dir():
+    if not is_backup_dir(path):
         # create two empty files
         f1 = open(os.path.join(path, cb.MAINFILE_PATH), 'w')
         f1.write(cb.MAINFILE_DEFAULT)
@@ -78,7 +78,7 @@ def clone(remote_path: str, local_path: str):
 
 def copy(path: str):
     """perform a rclone.copy of a local path to the remote"""
-    if is_backup_dir():
+    if is_backup_dir(path):
         source, dest = get_source_dest(path)
         rclone.copy(source, dest)
 
@@ -87,7 +87,7 @@ def push(path: str):
     """perform a rclone.sync of a local path to the remote
     similar to git push
     """
-    if is_backup_dir():
+    if is_backup_dir(path):
         source, dest = get_source_dest(path)
         rclone.sync(source, dest)
 
@@ -96,7 +96,7 @@ def pull(path):
     """perform a rclone.sync of remote into a local path
     similar to git pull
     """
-    if is_backup_dir():
+    if is_backup_dir(path):
         source, dest = get_source_dest(path)
         rclone.sync(dest, source)
 
@@ -105,6 +105,6 @@ def sync(path):
     """perform a rclone.bisync of a local path to the remote
     similar to git pull & push
     """
-    if is_backup_dir():
+    if is_backup_dir(path):
         source, dest = get_source_dest(path)
         rclone.bisync(source, dest)
