@@ -17,7 +17,18 @@ LOCALFILE_DEFAULT = json.dumps({first_sync: True}, indent=4)
 LOCALFILE_PATH = LOCALFILE_NAME
 
 EXCLUDEFILE_NAME = '.unibackup_ignore'
-EXCLUDEFILE_DEFAULT = '/' + LOCALFILE_NAME
+EXCLUDEFILE_DEFAULT = '''
+# EXCLUDE
+
+# do not touch the next line
+- /.unibackup_local
+
+# put your exclude here
+# - .git/ (example)
+
+# include everythigns else, should remain at the bottom of the file
++ **
+'''
 EXCLUDEFILE_PATH = EXCLUDEFILE_NAME
 
 

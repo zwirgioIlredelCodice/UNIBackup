@@ -3,6 +3,7 @@ import module.config.rclone as c
 
 
 def shell(commands: list[str], get=False):
+    print(commands)
     """ execute shell commands
 
     Args:

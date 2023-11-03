@@ -9,9 +9,10 @@ REMOTE_RECONNECT = ['config', 'reconnect']
 
 MKDIR = 'mkdir'
 
-exclude = '--exclude-from '+exludefile.EXCLUDEFILE_PATH
+exclude = '--filter-from '+exludefile.EXCLUDEFILE_PATH
+exclude_bisync = '--filters-file '+exludefile.EXCLUDEFILE_PATH
 
 COPY = ['copy', '--progress', '--verbose', exclude]
 SYNC = ['sync', '--progress', '--verbose', exclude]
 
-BISYNC = ['bisync', '--progress', '--verbose', exclude]
+BISYNC = ['bisync', '--progress', '--verbose', exclude_bisync]
