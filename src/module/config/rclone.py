@@ -9,4 +9,6 @@ MKDIR = 'mkdir'
 
 COPY = ['copy', '--progress', '--verbose']
 SYNC = ['sync', '--progress', '--verbose']
-BISYNC = ['bisync', '--resync', '--progress', '--verbose'] # TODO: For successive sync runs, leave off the --resync flag
+
+# TODO: For successive sync runs, leave off the --resync flag
+BISYNC = ['bisync', '--resync', '--progress', '--verbose']
