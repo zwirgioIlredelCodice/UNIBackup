@@ -1,3 +1,5 @@
+import module.config.backup as exludefile
+
 RCLONE = 'rclone'
 VERSION = '--version'
 
@@ -7,8 +9,9 @@ REMOTE_RECONNECT = ['config', 'reconnect']
 
 MKDIR = 'mkdir'
 
-COPY = ['copy', '--progress', '--verbose']
-SYNC = ['sync', '--progress', '--verbose']
+exclude = '--exclude-from '+exludefile.EXCLUDEFILE_PATH
 
-# TODO: For successive sync runs, leave off the --resync flag
-BISYNC = ['bisync', '--resync', '--progress', '--verbose']
+COPY = ['copy', '--progress', '--verbose', exclude]
+SYNC = ['sync', '--progress', '--verbose', exclude]
+
+BISYNC = ['bisync', '--progress', '--verbose', exclude]

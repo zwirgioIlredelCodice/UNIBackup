@@ -44,13 +44,18 @@ def init(path: str):
         path: directory to initialize
     """
     if not is_backup_dir(path):
-        # create two empty files
+        # create unibackup files
         f1 = open(os.path.join(path, cb.MAINFILE_PATH), 'w')
         f1.write(cb.MAINFILE_DEFAULT)
         f1.close()
+
         f2 = open(os.path.join(path, cb.EXCLUDEFILE_PATH), 'w')
         f2.write(cb.EXCLUDEFILE_DEFAULT)
         f2.close()
+
+        f3 = open(os.path.join(path, cb.LOCALFILE_PATH), 'w')
+        f3.write(cb.LOCALFILE_DEFAULT)
+        f3.close()
 
 
 def get_source_dest(path: str) -> (str, str):
@@ -105,6 +110,12 @@ def sync(path):
     """perform a rclone.bisync of a local path to the remote
     similar to git pull & push
     """
+    settings = cb.Localfile()
+    source, dest = get_source_dest(path)
+
     if is_backup_dir(path):
-        source, dest = get_source_dest(path)
-        rclone.bisync(source, dest)
+        if settings.is_first_sync():
+            rclone.bisync(source, dest, options=['--resync'])
+            settings.remember_sync()
+        else:
+            rclone.bisync(source, dest)

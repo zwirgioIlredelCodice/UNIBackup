@@ -3,16 +3,12 @@ import json
 
 def json_file_load(filename: str) -> dict:
     f = open(filename, 'r')
-    data = f.read()
-
-    return json.load(data)
+    return json.load(f)
 
 
 def json_file_save(filename: str, data: dict):
-    jdata = json.dumps(data, indent=4)
-
     f = open(filename, 'w')
-    f.write(jdata)
+    json.dump(data, f, indent=4)
 
 
 def json_file_read(filename: str, key: str):

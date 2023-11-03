@@ -141,7 +141,7 @@ def sync(source: str, dest: str):
     shell(command(c.SYNC, args=[source, dest]))
 
 
-def bisync(source: str, dest: str):
+def bisync(source: str, dest: str, options: list[str] = []):
     """
     Perform bidirectional synchronization between two paths.
 
@@ -157,4 +157,4 @@ def bisync(source: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.BISYNC, args=[source, dest]))
+    shell(command(c.BISYNC, args=[source, dest], options=options))
