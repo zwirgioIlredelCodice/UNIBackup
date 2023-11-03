@@ -7,6 +7,6 @@ REMOTE_RECONNECT = ['config', 'reconnect']
 
 MKDIR = 'mkdir'
 
-COPY = ['copy', '--progress']
-SYNC = ['sync', '--progress']
-BISYNC = ['bisync', '--progress']
+COPY = ['copy', '--progress', '--verbose']
+SYNC = ['sync', '--progress', '--verbose']
+BISYNC = ['bisync', '--resync', '--progress', '--verbose'] # TODO: For successive sync runs, leave off the --resync flag
