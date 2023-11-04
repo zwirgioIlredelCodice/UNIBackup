@@ -119,4 +119,14 @@ def sync(path):
             rclone.bisync(source, dest, options=['--resync'])
             settings.remember_sync()
         else:
-            rclone.bisync(source, dest)
+            try:
+                rclone.bisync(source, dest)
+            except:
+                # when updating .unibakcup_ignore
+                print('\nretry with --resync')
+                rclone.bisync(source, dest, options=['--resync'])
+
+
+def status(path):
+    source, dest = get_source_dest(path)
+    rclone.check(source, dest)

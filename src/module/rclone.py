@@ -159,3 +159,17 @@ def bisync(source: str, dest: str, options: list[str] = []):
         dest: local path or remote path
     """
     shell(command(c.BISYNC(source, dest), options=options))
+
+
+def check(sorce: str, dest: str):
+    """
+    Checks the files in the source and destination match.
+    It compares sizes and hashes (MD5 or SHA1) and logs a
+    report of files that don't match. It doesn't alter the
+    source or destination.
+
+    Args:
+        source: local path or remote path
+        dest: local path or remote path
+    """
+    shell(command(c.CHECK(sorce, dest)))

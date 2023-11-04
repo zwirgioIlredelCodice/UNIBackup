@@ -9,17 +9,21 @@ REMOTE_RECONNECT = ['config', 'reconnect']
 
 MKDIR = 'mkdir'
 
-exclude = '--filter-from '+exludefile.EXCLUDEFILE_PATH
-exclude_bisync = '--filters-file '+exludefile.EXCLUDEFILE_PATH
+exclude = ['--filter-from', exludefile.EXCLUDEFILE_PATH]
+exclude_bisync = ['--filters-file', exludefile.EXCLUDEFILE_PATH]
 
 
 def COPY(src: str, dst: str) -> list[str]:
-    return ['copy', src, dst, '--progress', '--verbose', exclude]
+    return ['copy', src, dst, '--progress', '--verbose'] + exclude
 
 
 def SYNC(src: str, dst: str) -> list[str]:
-    return ['sync', src, dst, '--progress', '--verbose', exclude]
+    return ['sync', src, dst, '--progress', '--verbose'] + exclude
 
 
 def BISYNC(src: str, dst: str) -> list[str]:
-    return ['bisync', src, dst, '--verbose', exclude_bisync]
+    return ['bisync', src, dst, '--progress', '--verbose'] + exclude_bisync
+
+
+def CHECK(src: str, dst: str) -> list[str]:
+    return ['check', src, dst] + exclude

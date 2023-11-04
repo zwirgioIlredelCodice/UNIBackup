@@ -64,7 +64,7 @@ if __name__ == "__main__":
     if command == "info":
         print("rclone version:", rclone.version())
     elif command == 'status':
-        print("active:", backup.is_backup_dir(cwd))
+        backup.status(cwd)
     elif command == "copy":
         backup.copy(cwd)
     elif command == "push":
