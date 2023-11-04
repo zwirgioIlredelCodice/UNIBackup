@@ -3,7 +3,7 @@ import module.config.rclone as c
 
 
 def shell(commands: list[str], get=False):
-    print(commands)
+    print(' '.join(commands))
     """ execute shell commands
 
     Args:
@@ -13,9 +13,9 @@ def shell(commands: list[str], get=False):
     if get:
         return subprocess.run(commands,
                               stdout=subprocess.PIPE,
-                              text=True).stdout
+                              text=True, check=True).stdout
     else:
-        return subprocess.run(commands)
+        return subprocess.run(commands, check=True)
 
 
 def command(kind: str | list[str], args=[], options=[]) -> list[str]:
@@ -30,7 +30,7 @@ def command(kind: str | list[str], args=[], options=[]) -> list[str]:
         list[str]: a command ready to be executed with shell()
     """
     # if is not an array, make it
-    if not (type(kind) == list):
+    if not (type(kind) is list):
         kind = [kind]
 
     return [c.RCLONE] + kind + args + options
@@ -123,7 +123,7 @@ def copy(source: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.COPY, args=[source, dest]))
+    shell(command(c.COPY(source, dest)))
 
 
 def sync(source: str, dest: str):
@@ -139,7 +139,7 @@ def sync(source: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.SYNC, args=[source, dest]))
+    shell(command(c.SYNC(source, dest)))
 
 
 def bisync(source: str, dest: str, options: list[str] = []):
@@ -158,4 +158,4 @@ def bisync(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.BISYNC, args=[source, dest], options=options))
+    shell(command(c.BISYNC(source, dest), options=options))

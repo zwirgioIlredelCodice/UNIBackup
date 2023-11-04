@@ -115,6 +115,7 @@ def sync(path):
 
     if is_backup_dir(path):
         if settings.is_first_sync():
+            rclone.mkdir(dest)
             rclone.bisync(source, dest, options=['--resync'])
             settings.remember_sync()
         else:

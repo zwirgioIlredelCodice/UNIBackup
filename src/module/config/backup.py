@@ -25,9 +25,6 @@ EXCLUDEFILE_DEFAULT = '''
 
 # put your exclude here
 # - .git/ (example)
-
-# include everythigns else, should remain at the bottom of the file
-+ **
 '''
 EXCLUDEFILE_PATH = EXCLUDEFILE_NAME
 
@@ -58,7 +55,7 @@ class Localfile(OptionFile):
         super().__del__()
 
     def is_first_sync(self) -> bool:
-        super().get(first_sync)
+        return super().get(first_sync)
 
     def remember_sync(self):
         super().set(first_sync, False)
