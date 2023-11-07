@@ -58,11 +58,11 @@ class Backup:
             f3.write(cb.LOCALFILE_DEFAULT)
             f3.close()
 
-    def clone(self, remote_path: str):
+    def clone(self, remote_dir: str):
         """clone a remote unibackup directory in a respective local folder
         """
-        remote = os.path.join(cb.REMOTE_DIR, remote_path)
-        local = os.path.join(self.path, remote_path)
+        remote = os.path.join(cb.REMOTE_DIR, remote_dir)
+        local = os.path.join(self.path, remote_dir)
         rclone.mkdir(local)
 
         rclone.copy(remote, local)
