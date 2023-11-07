@@ -3,130 +3,118 @@ import module.config.backup as cb
 import module.rclone as rclone
 
 
-def is_backup_dir(path: str) -> bool:
-    """ check if a directory is configured for unibackup
+class Backup:
+    def __init__(self, path):
+        self.path = path
+        self.source, self.dest = self.get_source_dest()
 
-    Args:
-        path: path to a directory
+    def get_source_dest(self) -> (str, str):
+        """map a local path with a remote path"""
+        source = os.path.abspath(self.path)
+        dest = cb.REMOTE_DIR + os.path.basename(self.path)  # /folder not /folder/
+        return source, dest
 
-    Returns:
-        bool: True if is a directory configured for unibackup, False otherwise
-    """
-    return os.path.exists(os.path.join(path, cb.MAINFILE_PATH))
+    def is_backup_dir(self) -> bool:
+        """ check if a directory is configured for unibackup
 
+        Returns:
+            bool: True if is a directory configured for unibackup, False otherwise
+        """
+        return os.path.exists(os.path.join(self.path, cb.MAINFILE_PATH))
 
-def is_configured() -> bool:
-    """check if is properly configured
+    def is_configured(self) -> bool:
+        """check if is properly configured
 
-    Returns:
-        bool: True if is properly configured, False otherwise
-    """
-    return rclone.remote_exists(cb.REMOTE_NAME)
+        Returns:
+            bool: True if is properly configured, False otherwise
+        """
+        return rclone.remote_exists(cb.REMOTE_NAME)
 
-
-def config():
-    """configure csunibackup"""
-    if not is_configured():
-        rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
-    else:
-        # if is configured, readd the remote, useful when is expired
-        rclone.remote_delete(cb.REMOTE_NAME)
-        rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
-
-    # make csunibackup/ path in the remote
-    rclone.mkdir(cb.REMOTE_DIR)
-
-
-def init(path: str):
-    """ initialize unibakcup in the given path
-
-    Args:
-        path: directory to initialize
-    """
-    if not is_backup_dir(path):
-        # create unibackup files
-        f1 = open(os.path.join(path, cb.MAINFILE_PATH), 'w')
-        f1.write(cb.MAINFILE_DEFAULT)
-        f1.close()
-
-        f2 = open(os.path.join(path, cb.EXCLUDEFILE_PATH), 'w')
-        f2.write(cb.EXCLUDEFILE_DEFAULT)
-        f2.close()
-
-        f3 = open(os.path.join(path, cb.LOCALFILE_PATH), 'w')
-        f3.write(cb.LOCALFILE_DEFAULT)
-        f3.close()
-
-
-def get_source_dest(path: str) -> (str, str):
-    """map a local path with a remote path"""
-    source = os.path.abspath(path)
-    dest = cb.REMOTE_DIR + os.path.basename(path)  # /folder not /folder/
-    return source, dest
-
-
-def clone(remote_path: str, local_path: str):
-    """clone a remote unibackup directory in a respective local folder
-
-    Args:
-        remote_path: unibackup directory in remote
-                     es. analisi, not unibackup:unibackup/analisi
-        local_path: local path where remote path content is cloned
-                    es. /home/fabio
-    """
-    remote = os.path.join(cb.REMOTE_DIR, remote_path)
-    local = os.path.join(local_path, remote_path)
-    rclone.mkdir(local)
-
-    rclone.copy(remote, local)
-
-
-def copy(path: str):
-    """perform a rclone.copy of a local path to the remote"""
-    if is_backup_dir(path):
-        source, dest = get_source_dest(path)
-        rclone.copy(source, dest)
-
-
-def push(path: str):
-    """perform a rclone.sync of a local path to the remote
-    similar to git push
-    """
-    if is_backup_dir(path):
-        source, dest = get_source_dest(path)
-        rclone.sync(source, dest)
-
-
-def pull(path):
-    """perform a rclone.sync of remote into a local path
-    similar to git pull
-    """
-    if is_backup_dir(path):
-        source, dest = get_source_dest(path)
-        rclone.sync(dest, source)
-
-
-def sync(path):
-    """perform a rclone.bisync of a local path to the remote
-    similar to git pull & push
-    """
-    settings = cb.Localfile()
-    source, dest = get_source_dest(path)
-
-    if is_backup_dir(path):
-        if settings.is_first_sync():
-            rclone.mkdir(dest)
-            rclone.bisync(source, dest, options=['--resync'])
-            settings.remember_sync()
+    def config(self):
+        """configure csunibackup"""
+        if not self.is_configured():
+            rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
         else:
-            try:
-                rclone.bisync(source, dest)
-            except:
-                # when updating .unibakcup_ignore
-                print('\nretry with --resync')
-                rclone.bisync(source, dest, options=['--resync'])
+            # if is configured, readd the remote, useful when is expired
+            rclone.remote_delete(cb.REMOTE_NAME)
+            rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
 
+        # make csunibackup/ path in the remote
+        rclone.mkdir(cb.REMOTE_DIR)
 
-def status(path):
-    source, dest = get_source_dest(path)
-    rclone.check(source, dest)
+    def init(self):
+        """ initialize unibakcup in the given path"""
+        if not self.is_backup_dir():
+            # create unibackup files
+            f1 = open(os.path.join(self.path, cb.MAINFILE_PATH), 'w')
+            f1.write(cb.MAINFILE_DEFAULT)
+            f1.close()
+
+            f2 = open(os.path.join(self.path, cb.EXCLUDEFILE_PATH), 'w')
+            f2.write(cb.EXCLUDEFILE_DEFAULT)
+            f2.close()
+
+            f3 = open(os.path.join(self.path, cb.LOCALFILE_PATH), 'w')
+            f3.write(cb.LOCALFILE_DEFAULT)
+            f3.close()
+
+    def clone(self, remote_path: str):
+        """clone a remote unibackup directory in a respective local folder
+        """
+        remote = os.path.join(cb.REMOTE_DIR, remote_path)
+        local = os.path.join(self.path, remote_path)
+        rclone.mkdir(local)
+
+        rclone.copy(remote, local)
+
+    def copy(self):
+        """perform a rclone.copy of a local path to the remote"""
+        if self.is_backup_dir():
+            rclone.copy(self.source, self.dest)
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def push(self):
+        """perform a rclone.sync of a local path to the remote
+        similar to git push
+        """
+        if self.is_backup_dir():
+            rclone.sync(self.source, self.dest)
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def pull(self):
+        """perform a rclone.sync of remote into a local path
+        similar to git pull
+        """
+        if self.is_backup_dir():
+            rclone.sync(self.dest, self.source)
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def sync(self):
+        """perform a rclone.bisync of a local path to the remote
+        similar to git pull & push
+        """
+        settings = cb.Localfile()
+
+        if self.is_backup_dir():
+            if settings.is_first_sync():
+                rclone.mkdir(self.dest)
+                rclone.bisync(self.source, self.dest, options=['--resync'])
+                settings.remember_sync()
+            else:
+                try:
+                    rclone.bisync(self.source, self.dest)
+                except:
+                    # when updating .unibakcup_ignore
+                    print('\nretry with --resync')
+                    rclone.bisync(self.source, self.dest, options=['--resync'])
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def status(self):
+        if self.is_backup_dir():
+            rclone.check(self.source, self.dest)
+        else:
+            raise Exception("unibackup is not initialized in this directory")

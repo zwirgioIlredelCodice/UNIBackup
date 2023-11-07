@@ -2,7 +2,7 @@
 import os
 
 import module.rclone as rclone
-import module.backup as backup
+from module.backup import Backup
 
 # TODO: better help
 HELP = '''
@@ -24,7 +24,7 @@ Commands:
 
 if __name__ == "__main__":
     cwd = os.getcwd()
-
+    backup = Backup(cwd)
     import sys
     if len(sys.argv) <= 1:
         print(HELP)
@@ -41,12 +41,12 @@ if __name__ == "__main__":
     elif command == "config":
         backup.config()
     elif command == "init":
-        if backup.is_backup_dir(cwd):
+        if backup.is_backup_dir():
             print("alredy initialized")
         else:
-            backup.init(cwd)
+            backup.init()
     elif command == "clone":
-        backup.clone(args[1], cwd)
+        backup.clone(args[1])
     else:
         found_command = False
 
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         print('unibackup is not configured')
         print('run unibackup config')
         exit()
-    if not found_command and not backup.is_backup_dir(cwd):
+    if not found_command and not backup.is_backup_dir():
         # TODO: better error
         print('unibackup is not initialize in this directory')
         print('run unibackup init')
@@ -64,15 +64,15 @@ if __name__ == "__main__":
     if command == "info":
         print("rclone version:", rclone.version())
     elif command == 'status':
-        backup.status(cwd)
+        backup.status()
     elif command == "copy":
-        backup.copy(cwd)
+        backup.copy()
     elif command == "push":
-        backup.push(cwd)
+        backup.push()
     elif command == "pull":
-        backup.pull(cwd)
+        backup.pull()
     elif command == "sync":
-        backup.sync(cwd)
+        backup.sync()
     else:
         if not found_command:
             print('command not found')
