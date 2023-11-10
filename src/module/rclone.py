@@ -1,9 +1,10 @@
 import subprocess
-import module.config.rclone as c
 
+import module.config.rclone as c
+import module.utility
 
 def shell(commands: list[str], get=False):
-    print(' '.join(commands))
+    module.utility.prettyPrint.ok(' '.join(commands))
     """ execute shell commands
 
     Args:

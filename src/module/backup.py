@@ -67,10 +67,17 @@ class Backup:
 
         rclone.copy(remote, local)
 
-    def copy(self):
+    def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
         if self.is_backup_dir():
             rclone.copy(self.source, self.dest)
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def safepull(self):
+        """perform a rclone.copy from the remote to local"""
+        if self.is_backup_dir():
+            rclone.copy(self.dest, self.source)
         else:
             raise Exception("unibackup is not initialized in this directory")
 
