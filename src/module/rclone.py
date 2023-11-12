@@ -3,6 +3,7 @@ import subprocess
 import module.config.rclone as c
 import module.utility
 
+
 def shell(commands: list[str], get=False):
     module.utility.prettyPrint.ok(' '.join(commands))
     """ execute shell commands

@@ -37,10 +37,16 @@ if __name__ == "__main__":
     sync_parser = subparsers.add_parser('sync',
                                         help="perform bidirectional synchronization between local and remote backup")
 
+    sync_parser = subparsers.add_parser('rclone',
+                                        help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path for the current dir")
+
 
     # https://stackoverflow.com/questions/4575747/get-selected-subcommand-with-argparse
-    kwargs = vars(parser.parse_args())
-    subcommand = kwargs.pop('subparser')
+    if sys.argv[1] != 'rclone':
+        kwargs = vars(parser.parse_args())
+        subcommand = kwargs.pop('subparser')
+    else:
+        subcommand = 'rclone'
 
     if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync']:
         if not backup.is_configured():
@@ -74,6 +80,14 @@ if __name__ == "__main__":
                     backup.init(**kwargs)
             case 'clone':
                 backup.clone(**kwargs)
+            case 'rclone':
+                topass = sys.argv[1:]
+                for i in range(len(topass)):
+                    if topass[i] == 'LOCAL':
+                        topass[i] = backup.source
+                    elif topass[i] == 'REMOTE':
+                        topass[i] = backup.dest
+                rclone.shell(topass)
             case _:
                 parser.print_help(sys.stderr)
 
