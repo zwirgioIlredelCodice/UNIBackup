@@ -20,7 +20,8 @@ if __name__ == "__main__":
     config_parser = subparsers.add_parser('config', help='configure unibackup')
     init_parser = subparsers.add_parser('init',
                                         help='initialize unibackup in the running direcory')
-
+    clone_parser = subparsers.add_parser('listbakups',
+                                        help='list all unibackup direcory in remote')
     clone_parser = subparsers.add_parser('clone',
                                         help='clone a unibackup direcory in the running direcory')
     clone_parser.add_argument('-d', '--remote_dir', dest='remote_dir',
@@ -42,11 +43,12 @@ if __name__ == "__main__":
 
 
     # https://stackoverflow.com/questions/4575747/get-selected-subcommand-with-argparse
-    if sys.argv[1] != 'rclone':
+    if len(sys.argv) > 1 and sys.argv[1] == 'rclone':
+        subcommand = 'rclone'
+    else:
         kwargs = vars(parser.parse_args())
         subcommand = kwargs.pop('subparser')
-    else:
-        subcommand = 'rclone'
+
 
     if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync']:
         if not backup.is_configured():
@@ -73,6 +75,8 @@ if __name__ == "__main__":
         match subcommand:
             case 'config':
                 backup.config(**kwargs)
+            case 'listbakups':
+                backup.listbakups()
             case 'init':
                 if backup.is_backup_dir():
                     prettyPrint.warn("alredy initialized")

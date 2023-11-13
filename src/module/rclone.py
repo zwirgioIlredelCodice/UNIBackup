@@ -113,7 +113,7 @@ def mkdir(path: str):
     shell(command(c.MKDIR, args=[path]))
 
 
-def copy(source: str, dest: str):
+def copy(source: str, dest: str, excludef=True):
     """
     Copy the source to the destination. Does not transfer files that are
     identical on source and destination, testing by size and modification
@@ -125,7 +125,7 @@ def copy(source: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.COPY(source, dest)))
+    shell(command(c.COPY(source, dest, excludef)))
 
 
 def sync(source: str, dest: str):
@@ -195,6 +195,8 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
     Args:
         path: remote or local path
         filters: array of filter, if [] all
+
+    filters = {"Path","Name","Size","MimeType","ModTime","IsDir","ID"}
     """
     import json
     textdata = shell(command(c.LSJSON(path)), get=True)

@@ -58,6 +58,15 @@ class Backup:
             f3.write(cb.LOCALFILE_DEFAULT)
             f3.close()
 
+    def listbakups(self):
+        if self.is_configured():
+            data = rclone.lsjson(cb.REMOTE_DIR, filters=['Name', 'IsDir'])
+
+            print("list of folders saved in remote:")
+            for d in data:
+                if d['IsDir']:
+                    print(d['Name'])
+
     def clone(self, remote_dir: str):
         """clone a remote unibackup directory in a respective local folder
         """
@@ -65,7 +74,7 @@ class Backup:
         local = os.path.join(self.path, remote_dir)
         rclone.mkdir(local)
 
-        rclone.copy(remote, local)
+        rclone.copy(remote, local, excludef=False)
 
     def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
