@@ -27,3 +27,11 @@ def BISYNC(src: str, dst: str) -> list[str]:
 
 def CHECK(src: str, dst: str) -> list[str]:
     return ['check', src, dst] + exclude
+
+
+def CLEANUP(remotepath: str) -> list[str]:
+    return ['cleanup', remotepath, '--verbose']
+
+
+def LSJSON(path: str) -> list[str]:
+    return ['lsjson', path]

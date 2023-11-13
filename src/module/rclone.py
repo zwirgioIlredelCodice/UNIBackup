@@ -175,3 +175,66 @@ def check(sorce: str, dest: str):
         dest: local path or remote path
     """
     shell(command(c.CHECK(sorce, dest)))
+
+
+def cleanup(remotepath: str):
+    """
+    Clean up the remote if possible. Empty the trash or
+    delete old file versions. Not supported by all remotes.
+
+    Args:
+        remotepath: path to a remote or a remote directory to clean
+    """
+    shell(command(c.CLEANUP(remotepath)))
+
+
+def lsjson(path: str, filters: list[str] = []) -> list[dict]:
+    """
+    List directories and objects in the path in JSON format.
+
+    Args:
+        path: remote or local path
+        filters: array of filter, if [] all
+    """
+    import json
+    textdata = shell(command(c.LSJSON(path)), get=True)
+    data = json.loads(textdata)
+
+    if len(filters) == 0:
+        return data
+
+    newlist = []
+    for d in data:
+        newdict = {}
+        for f in filters:
+            newdict[f] = d.get(f)
+        newlist.append(newdict)
+
+    return newlist
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
