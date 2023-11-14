@@ -113,7 +113,7 @@ def mkdir(path: str):
     shell(command(c.MKDIR, args=[path]))
 
 
-def copy(source: str, dest: str, excludef=True):
+def copy(source: str, dest: str, options: list[str] = []):
     """
     Copy the source to the destination. Does not transfer files that are
     identical on source and destination, testing by size and modification
@@ -125,10 +125,10 @@ def copy(source: str, dest: str, excludef=True):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.COPY(source, dest, excludef)))
+    shell(command(c.COPY, args=[source, dest], options=options))
 
 
-def sync(source: str, dest: str):
+def sync(source: str, dest: str, options: list[str] = []):
     """
     Sync the source to the destination, changing the destination only. Doesn't
     transfer files that are identical on source and destination, testing by
@@ -141,7 +141,7 @@ def sync(source: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.SYNC(source, dest)))
+    shell(command(c.SYNC, args=[source, dest], options=options))
 
 
 def bisync(source: str, dest: str, options: list[str] = []):
@@ -160,10 +160,10 @@ def bisync(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.BISYNC(source, dest), options=options))
+    shell(command(c.BISYNC, args=[source, dest], options=options))
 
 
-def check(sorce: str, dest: str):
+def check(source: str, dest: str, options: list[str] = []):
     """
     Checks the files in the source and destination match.
     It compares sizes and hashes (MD5 or SHA1) and logs a
@@ -174,10 +174,10 @@ def check(sorce: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.CHECK(sorce, dest)), check=False)
+    shell(command(c.CHECK, args=[source, dest], options=options))
 
 
-def cleanup(remotepath: str):
+def cleanup(remotepath: str, options: list[str] = []):
     """
     Clean up the remote if possible. Empty the trash or
     delete old file versions. Not supported by all remotes.
@@ -185,7 +185,7 @@ def cleanup(remotepath: str):
     Args:
         remotepath: path to a remote or a remote directory to clean
     """
-    shell(command(c.CLEANUP(remotepath)))
+    shell(command(c.CLEANUP, args=remotepath, options=options))
 
 
 def lsjson(path: str, filters: list[str] = []) -> list[dict]:
@@ -199,7 +199,7 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
     filters = {"Path","Name","Size","MimeType","ModTime","IsDir","ID"}
     """
     import json
-    textdata = shell(command(c.LSJSON(path)), get=True)
+    textdata = shell(command(c.LSJSON, args=[path]), get=True)
     data = json.loads(textdata)
 
     if len(filters) == 0:
