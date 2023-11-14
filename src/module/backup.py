@@ -76,6 +76,11 @@ class Backup:
 
         rclone.copy(remote, local, excludef=False)
 
+        # create localfile
+        f3 = open(os.path.join(local, cb.LOCALFILE_PATH), 'w')
+        f3.write(cb.LOCALFILE_DEFAULT)
+        f3.close()
+
     def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
         if self.is_backup_dir():

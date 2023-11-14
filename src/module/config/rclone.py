@@ -16,7 +16,7 @@ exclude_bisync = ['--filters-file', exludefile.EXCLUDEFILE_PATH]
 def COPY(src: str, dst: str, excludef=True) -> list[str]:
     out = ['copy', src, dst, '--progress', '--verbose']
     if excludef:
-        out.append(exclude)
+        out = out + exclude
     return out
 
 

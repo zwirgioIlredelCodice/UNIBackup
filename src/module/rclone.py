@@ -4,7 +4,7 @@ import module.config.rclone as c
 import module.utility
 
 
-def shell(commands: list[str], get=False):
+def shell(commands: list[str], get=False, check=True):
     module.utility.prettyPrint.ok(' '.join(commands))
     """ execute shell commands
 
@@ -15,9 +15,9 @@ def shell(commands: list[str], get=False):
     if get:
         return subprocess.run(commands,
                               stdout=subprocess.PIPE,
-                              text=True, check=True).stdout
+                              text=True, check=check).stdout
     else:
-        return subprocess.run(commands, check=True)
+        return subprocess.run(commands, check=check)
 
 
 def command(kind: str | list[str], args=[], options=[]) -> list[str]:
@@ -174,7 +174,7 @@ def check(sorce: str, dest: str):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.CHECK(sorce, dest)))
+    shell(command(c.CHECK(sorce, dest)), check=False)
 
 
 def cleanup(remotepath: str):
