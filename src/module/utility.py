@@ -1,4 +1,5 @@
 import json
+import subprocess
 
 
 def json_file_load(filename: str) -> dict:
@@ -68,3 +69,37 @@ class prettyPrint:
 
     def err(text: str):
         print(colors.fg.red, text, colors.reset)
+
+
+def shell(commands: list[str], get=False, check=True):
+    prettyPrint.ok(' '.join(commands))
+    """ execute shell commands
+
+    Args:
+        commands: command to execute represented as a list of str
+        get: if True return the output of the runned command
+    """
+    if get:
+        return subprocess.run(commands,
+                              stdout=subprocess.PIPE,
+                              text=True, check=check).stdout
+    else:
+        return subprocess.run(commands, check=check)
+
+
+class OptionFile:
+    def __init__(self, filename: str):
+        self.filename = filename
+        self.data = self.module.utility.json_file_load(filename)
+
+    def __del__(self):
+        self.module.utility.json_file_save(self.filename, self.data)
+
+    def get(self, name: str):
+        return self.data[name]
+
+    def set(self, name: str, value):
+        self.data[name] = value
+
+    def update(self, name: str, value):
+        self.set(name, value)

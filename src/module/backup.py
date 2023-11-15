@@ -1,7 +1,54 @@
 import os.path
-import module.config.backup as cb
-import module.config.rclone as cr
 import module.rclone as rclone
+
+
+class Settings:
+    import module.utility
+    import json
+
+    REMOTE_NAME = 'unibackup'
+    REMOTE_DIR = REMOTE_NAME + ':unibackup/current/'
+    REMOTE_TYPE = 'onedrive'
+
+    MAINFILE_NAME = '.unibackup'
+    MAINFILE_DEFAULT = ''
+    MAINFILE_PATH = MAINFILE_NAME
+
+    LOCALFILE_NAME = '.unibackup_local'
+
+    first_sync = 'first_sync'
+    LOCALFILE_DEFAULT = json.dumps(
+        {
+            first_sync: True
+        },
+        indent=4)
+
+    LOCALFILE_PATH = LOCALFILE_NAME
+
+    EXCLUDEFILE_NAME = '.unibackup_ignore'
+    EXCLUDEFILE_DEFAULT = '''
+    # EXCLUDE
+
+    # do not touch the next line
+    - /.unibackup_local
+
+    # put your exclude here
+    # - .git/ (example)
+    '''
+    EXCLUDEFILE_PATH = EXCLUDEFILE_NAME
+
+    class Localfile(module.utility.OptionFile):
+        def __init__(self):
+            super().__init__(self.LOCALFILE_PATH)
+
+        def __del__(self):
+            super().__del__()
+
+        def is_first_sync(self) -> bool:
+            return super().get(self.first_sync)
+
+        def remember_sync(self):
+            super().set(self.first_sync, False)
 
 
 class Backup:
@@ -14,10 +61,25 @@ class Backup:
         return os.path.join(self.path, path)
 
     def local_to_remote(self, path: str) -> str:
-        return os.path.join(cb.REMOTE_DIR, os.path.basename(path))
+        return os.path.join(Settings.REMOTE_DIR, os.path.basename(path))
 
     def remote_to_remote(self, path: str) -> str:
-        return os.path.join(cb.REMOTE_DIR, path)
+        return os.path.join(Settings.REMOTE_DIR, path)
+
+    def create_mainfile(self):
+        f = open(self.local_to_local(Settings.MAINFILE_PATH), 'w')
+        f.write(Settings.MAINFILE_DEFAULT)
+        f.close()
+
+    def create_excludefile(self):
+        f = open(self.local_to_local(Settings.EXCLUDEFILE_PATH), 'w')
+        f.write(Settings.EXCLUDEFILE_DEFAULT)
+        f.close()
+
+    def create_localfile(self):
+        f = open(self.local_to_local(Settings.LOCALFILE_PATH), 'w')
+        f.write(Settings.LOCALFILE_DEFAULT)
+        f.close()
 
     def is_backup_dir(self) -> bool:
         """ check if a directory is configured for unibackup
@@ -25,7 +87,7 @@ class Backup:
         Returns:
             bool: True if is a directory configured for unibackup, False otherwise
         """
-        return os.path.exists(self.local_to_local(cb.MAINFILE_PATH))
+        return os.path.exists(self.local_to_local(Settings.MAINFILE_PATH))
 
     def is_configured(self) -> bool:
         """check if is properly configured
@@ -33,39 +95,31 @@ class Backup:
         Returns:
             bool: True if is properly configured, False otherwise
         """
-        return rclone.remote_exists(cb.REMOTE_NAME)
+        return rclone.remote_exists(Settings.REMOTE_NAME)
 
     def config(self):
         """configure csunibackup"""
         if not self.is_configured():
-            rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
+            rclone.remote_add(Settings.REMOTE_NAME, Settings.REMOTE_TYPE)
         else:
             # if is configured, readd the remote, useful when is expired
-            rclone.remote_delete(cb.REMOTE_NAME)
-            rclone.remote_add(cb.REMOTE_NAME, cb.REMOTE_TYPE)
+            rclone.remote_delete(Settings.REMOTE_NAME)
+            rclone.remote_add(Settings.REMOTE_NAME, Settings.REMOTE_TYPE)
 
         # make csunibackup/ path in the remote
-        rclone.mkdir(cb.REMOTE_DIR)
+        rclone.mkdir(Settings.REMOTE_DIR)
 
     def init(self):
         """ initialize unibakcup in the given path"""
         if not self.is_backup_dir():
             # create unibackup files
-            f1 = open(self.local_to_local(cb.MAINFILE_PATH), 'w')
-            f1.write(cb.MAINFILE_DEFAULT)
-            f1.close()
-
-            f2 = open(self.local_to_local(cb.EXCLUDEFILE_PATH), 'w')
-            f2.write(cb.EXCLUDEFILE_DEFAULT)
-            f2.close()
-
-            f3 = open(self.local_to_local(cb.LOCALFILE_PATH), 'w')
-            f3.write(cb.LOCALFILE_DEFAULT)
-            f3.close()
+            self.create_mainfile()
+            self.create_localfile()
+            self.create_excludefile()
 
     def listbakups(self):
         if self.is_configured():
-            data = rclone.lsjson(cb.REMOTE_DIR, filters=['Name', 'IsDir'])
+            data = rclone.lsjson(Settings.REMOTE_DIR, filters=['Name', 'IsDir'])
 
             print("list of folders saved in remote:")
             for d in data:
@@ -79,20 +133,17 @@ class Backup:
         local = self.local_to_local(remote_dir)
         rclone.mkdir(local)
 
-        rclone.copy(remote, local, options=[cr.progress, cr.verbose])
+        rclone.copy(remote, local, options=[rclone.progress, rclone.verbose])
 
-        # create localfile
-        f3 = open(self.local_to_local(cb.LOCALFILE_PATH), 'w')
-        f3.write(cb.LOCALFILE_DEFAULT)
-        f3.close()
+        self.create_localfile()
 
     def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
         if self.is_backup_dir():
             rclone.copy(self.source, self.dest, options=[
-                cr.filter_from, cb.EXCLUDEFILE_PATH,
-                cr.progress,
-                cr.verbose
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+                rclone.progress,
+                rclone.verbose
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")
@@ -101,9 +152,9 @@ class Backup:
         """perform a rclone.copy from the remote to local"""
         if self.is_backup_dir():
             rclone.copy(self.dest, self.source, options=[
-                cr.filter_from, cb.EXCLUDEFILE_PATH,
-                cr.progress,
-                cr.verbose
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+                rclone.progress,
+                rclone.verbose
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")
@@ -114,9 +165,9 @@ class Backup:
         """
         if self.is_backup_dir():
             rclone.sync(self.source, self.dest, options=[
-                cr.filter_from, cb.EXCLUDEFILE_PATH,
-                cr.progress,
-                cr.verbose
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+                rclone.progress,
+                rclone.verbose
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")
@@ -127,9 +178,9 @@ class Backup:
         """
         if self.is_backup_dir():
             rclone.sync(self.dest, self.source, options=[
-                cr.filter_from, cb.EXCLUDEFILE_PATH,
-                cr.progress,
-                cr.verbose
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+                rclone.progress,
+                rclone.verbose
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")
@@ -138,33 +189,33 @@ class Backup:
         """perform a rclone.bisync of a local path to the remote
         similar to git pull & push
         """
-        settings = cb.Localfile()
+        settings = Settings.Localfile()
 
         if self.is_backup_dir():
             if settings.is_first_sync():
                 rclone.mkdir(self.dest)
                 rclone.bisync(self.source, self.dest, options=[
-                    cr.resync,
-                    cr.filters_file, cb.EXCLUDEFILE_PATH,
-                    cr.progress,
-                    cr.verbose
+                    rclone.resync,
+                    rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                    rclone.progress,
+                    rclone.verbose
                     ])
                 settings.remember_sync()
             else:
                 try:
                     rclone.bisync(self.source, self.dest, options=[
-                        cr.filters_file, cb.EXCLUDEFILE_PATH,
-                        cr.progress,
-                        cr.verbose
+                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                        rclone.progress,
+                        rclone.verbose
                         ])
                 except:
                     # when updating .unibakcup_ignore
                     print('\nretry with --resync')
                     rclone.bisync(self.source, self.dest, options=[
-                        cr.resync,
-                        cr.filters_file, cb.EXCLUDEFILE_PATH,
-                        cr.progress,
-                        cr.verbose
+                        rclone.resync,
+                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                        rclone.progress,
+                        rclone.verbose
                         ])
         else:
             raise Exception("unibackup is not initialized in this directory")

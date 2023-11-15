@@ -3,9 +3,8 @@ import os
 import sys
 import argparse
 
-import module.rclone as rclone
 from module.backup import Backup
-from module.utility import prettyPrint
+from module.utility import prettyPrint, shell
 
 
 if __name__ == "__main__":
@@ -91,7 +90,7 @@ if __name__ == "__main__":
                         topass[i] = backup.source
                     elif topass[i] == 'REMOTE':
                         topass[i] = backup.dest
-                rclone.shell(topass)
+                shell(topass)
             case _:
                 parser.print_help(sys.stderr)
 

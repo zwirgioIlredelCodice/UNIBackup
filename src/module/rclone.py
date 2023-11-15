@@ -1,23 +1,26 @@
-import subprocess
+from module.utility import shell
 
-import module.config.rclone as c
-import module.utility
+RCLONE = 'rclone'
+VERSION = '--version'
 
+REMOTE_ADD = ['config', 'create']
+REMOTE_DELETE = ['config', 'delete']
+REMOTE_RECONNECT = ['config', 'reconnect']
 
-def shell(commands: list[str], get=False, check=True):
-    module.utility.prettyPrint.ok(' '.join(commands))
-    """ execute shell commands
+MKDIR = 'mkdir'
+COPY = 'copy'
+SYNC = 'sync'
+BISYNC = 'bisync'
+CHECK = 'check'
+CLEANUP = 'cleanup'
+LSJSON = 'lsjson'
 
-    Args:
-        commands: command to execute represented as a list of str
-        get: if True return the output of the runned command
-    """
-    if get:
-        return subprocess.run(commands,
-                              stdout=subprocess.PIPE,
-                              text=True, check=check).stdout
-    else:
-        return subprocess.run(commands, check=check)
+# OPTIONS
+verbose = '--verbose'
+progress = '--progress'
+filter_from = '--filter-from'
+filters_file = '--filters-file'
+resync = '--resync'
 
 
 def command(kind: str | list[str], args=[], options=[]) -> list[str]:
@@ -35,7 +38,7 @@ def command(kind: str | list[str], args=[], options=[]) -> list[str]:
     if not (type(kind) is list):
         kind = [kind]
 
-    return [c.RCLONE] + kind + args + options
+    return [RCLONE] + kind + args + options
 
 
 def version() -> str:
@@ -46,7 +49,7 @@ def version() -> str:
     """
     version_number_i = 1
 
-    version = shell(command(c.VERSION), get=True)
+    version = shell(command(VERSION), get=True)
     version = version.split()
     version = version[version_number_i]
     return version
@@ -87,7 +90,7 @@ def remote_add(remote_name: str, remote_type: str):
         remote_name: name of the remote to add
         remote_type: type of the remote
     """
-    shell(command(c.REMOTE_ADD, args=[remote_name, remote_type]))
+    shell(command(REMOTE_ADD, args=[remote_name, remote_type]))
 
 
 def remote_delete(remote_name: str):
@@ -96,7 +99,7 @@ def remote_delete(remote_name: str):
     Args:
         remote_name: name of the remote to delete
     """
-    shell(command(c.REMOTE_DELETE, args=[remote_name]))
+    shell(command(REMOTE_DELETE, args=[remote_name]))
 
 
 def remote_reconnect(remote_name: str):
@@ -105,12 +108,12 @@ def remote_reconnect(remote_name: str):
     Args:
         remote_name: name of the remote to reconnect
     """
-    shell(command(c.REMOTE_RECONNECT, args=[remote_name]))
+    shell(command(REMOTE_RECONNECT, args=[remote_name]))
 
 
 def mkdir(path: str):
     """Make the path if it doesn't already exist."""
-    shell(command(c.MKDIR, args=[path]))
+    shell(command(MKDIR, args=[path]))
 
 
 def copy(source: str, dest: str, options: list[str] = []):
@@ -125,7 +128,7 @@ def copy(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.COPY, args=[source, dest], options=options))
+    shell(command(COPY, args=[source, dest], options=options))
 
 
 def sync(source: str, dest: str, options: list[str] = []):
@@ -141,7 +144,7 @@ def sync(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.SYNC, args=[source, dest], options=options))
+    shell(command(SYNC, args=[source, dest], options=options))
 
 
 def bisync(source: str, dest: str, options: list[str] = []):
@@ -160,7 +163,7 @@ def bisync(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.BISYNC, args=[source, dest], options=options))
+    shell(command(BISYNC, args=[source, dest], options=options))
 
 
 def check(source: str, dest: str, options: list[str] = []):
@@ -174,7 +177,7 @@ def check(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(c.CHECK, args=[source, dest], options=options))
+    shell(command(CHECK, args=[source, dest], options=options))
 
 
 def cleanup(remotepath: str, options: list[str] = []):
@@ -185,7 +188,7 @@ def cleanup(remotepath: str, options: list[str] = []):
     Args:
         remotepath: path to a remote or a remote directory to clean
     """
-    shell(command(c.CLEANUP, args=remotepath, options=options))
+    shell(command(CLEANUP, args=remotepath, options=options))
 
 
 def lsjson(path: str, filters: list[str] = []) -> list[dict]:
@@ -199,7 +202,7 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
     filters = {"Path","Name","Size","MimeType","ModTime","IsDir","ID"}
     """
     import json
-    textdata = shell(command(c.LSJSON, args=[path]), get=True)
+    textdata = shell(command(LSJSON, args=[path]), get=True)
     data = json.loads(textdata)
 
     if len(filters) == 0:
@@ -213,30 +216,3 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
         newlist.append(newdict)
 
     return newlist
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
