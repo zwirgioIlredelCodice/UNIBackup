@@ -54,8 +54,11 @@ class Settings:
 class Backup:
     def __init__(self, path):
         self.path = os.path.abspath(path)
-        self.source = self.path
-        self.dest = self.local_to_remote(self.path)
+        self.local = self.path
+        self.remote = self.local_to_remote(self.path)
+
+        self.exludefile_local = self.local_to_local(Settings.EXCLUDEFILE_PATH)
+        self.exludefile_remote = os.path.join(self.remote, Settings.EXCLUDEFILE_PATH)
 
     def local_to_local(self, path: str) -> str:
         return os.path.join(self.path, path)
@@ -132,16 +135,21 @@ class Backup:
         remote = self.remote_to_remote(remote_dir)
         local = self.local_to_local(remote_dir)
         rclone.mkdir(local)
+        exludefile_remote = os.path.join(remote, Settings.EXCLUDEFILE_PATH)
 
-        rclone.copy(remote, local, options=[rclone.progress, rclone.verbose])
+        rclone.copy(remote, local, options=[
+            rclone.filter_from, exludefile_remote,
+            rclone.progress,
+            rclone.verbose
+            ])
 
         self.create_localfile()
 
     def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
         if self.is_backup_dir():
-            rclone.copy(self.source, self.dest, options=[
-                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+            rclone.copy(self.local, self.remote, options=[
+                rclone.filter_from, self.exludefile_local,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -151,8 +159,8 @@ class Backup:
     def safepull(self):
         """perform a rclone.copy from the remote to local"""
         if self.is_backup_dir():
-            rclone.copy(self.dest, self.source, options=[
-                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+            rclone.copy(self.remote, self.local, options=[
+                rclone.filter_from, self.exludefile_remote,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -164,8 +172,8 @@ class Backup:
         similar to git push
         """
         if self.is_backup_dir():
-            rclone.sync(self.source, self.dest, options=[
-                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+            rclone.sync(self.local, self.remote, options=[
+                rclone.filter_from, self.exludefile_local,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -177,8 +185,8 @@ class Backup:
         similar to git pull
         """
         if self.is_backup_dir():
-            rclone.sync(self.dest, self.source, options=[
-                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
+            rclone.sync(self.remote, self.local, options=[
+                rclone.filter_from, self.exludefile_remote,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -193,27 +201,27 @@ class Backup:
 
         if self.is_backup_dir():
             if settings.is_first_sync():
-                rclone.mkdir(self.dest)
-                rclone.bisync(self.source, self.dest, options=[
+                rclone.mkdir(self.remote)
+                rclone.bisync(self.local, self.remote, options=[
                     rclone.resync,
-                    rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                    rclone.filters_file, self.exludefile_local,
                     rclone.progress,
                     rclone.verbose
                     ])
                 settings.remember_sync()
             else:
                 try:
-                    rclone.bisync(self.source, self.dest, options=[
-                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                    rclone.bisync(self.local, self.remote, options=[
+                        rclone.filters_file, self.exludefile_local,
                         rclone.progress,
                         rclone.verbose
                         ])
                 except:
                     # when updating .unibakcup_ignore
                     print('\nretry with --resync')
-                    rclone.bisync(self.source, self.dest, options=[
+                    rclone.bisync(self.local, self.remote, options=[
                         rclone.resync,
-                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
+                        rclone.filters_file, self.exludefile_local,
                         rclone.progress,
                         rclone.verbose
                         ])
@@ -222,6 +230,6 @@ class Backup:
 
     def status(self):
         if self.is_backup_dir():
-            rclone.check(self.source, self.dest)
+            rclone.check(self.local, self.remote)
         else:
             raise Exception("unibackup is not initialized in this directory")
