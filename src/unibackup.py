@@ -19,7 +19,7 @@ if __name__ == "__main__":
     config_parser = subparsers.add_parser('config', help='configure unibackup')
     init_parser = subparsers.add_parser('init',
                                         help='initialize unibackup in the running direcory')
-    clone_parser = subparsers.add_parser('listbakups',
+    clone_parser = subparsers.add_parser('listbackups',
                                         help='list all unibackup direcory in remote')
     clone_parser = subparsers.add_parser('clone',
                                         help='clone a unibackup direcory in the running direcory')
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         match subcommand:
             case 'config':
                 backup.config(**kwargs)
-            case 'listbakups':
-                backup.listbakups()
+            case 'listbackups':
+                backup.listbackups()
             case 'init':
                 if backup.is_backup_dir():
                     prettyPrint.warn("alredy initialized")

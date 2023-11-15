@@ -120,7 +120,7 @@ class Backup:
             self.create_localfile()
             self.create_excludefile()
 
-    def listbakups(self):
+    def listbackups(self):
         if self.is_configured():
             data = rclone.lsjson(Settings.REMOTE_DIR, filters=['Name', 'IsDir'])
 
