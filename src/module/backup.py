@@ -227,6 +227,16 @@ class Backup:
 
     def status(self):
         if self.is_backup_dir():
-            rclone.check(self.local, self.remote)
+            print('''
+            = path means path was found in source and destination and was identical
+            - path means path was missing on the source, so only in the destination
+            + path means path was missing on the destination, so only in the source
+            * path means path was present in source and destination but different.
+            ! path means there was an error reading or hashing the source or dest.
+            ''')
+            rclone.check(self.local, self.remote, options=[
+                '--combined', '-',
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH
+                ])
         else:
             raise Exception("unibackup is not initialized in this directory")

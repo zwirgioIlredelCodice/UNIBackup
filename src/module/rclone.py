@@ -22,7 +22,6 @@ filter_from = '--filter-from'
 filters_file = '--filters-file'
 resync = '--resync'
 
-
 def command(kind: str | list[str], args=[], options=[]) -> list[str]:
     """ assemble a rclone command
 
@@ -177,7 +176,7 @@ def check(source: str, dest: str, options: list[str] = []):
         source: local path or remote path
         dest: local path or remote path
     """
-    shell(command(CHECK, args=[source, dest], options=options))
+    shell(command(CHECK, args=[source, dest], options=options), check=False)
 
 
 def cleanup(remotepath: str, options: list[str] = []):

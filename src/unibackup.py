@@ -87,9 +87,9 @@ if __name__ == "__main__":
                 topass = sys.argv[1:]
                 for i in range(len(topass)):
                     if topass[i] == 'LOCAL':
-                        topass[i] = backup.source
+                        topass[i] = backup.local
                     elif topass[i] == 'REMOTE':
-                        topass[i] = backup.dest
+                        topass[i] = backup.remote
                 shell(topass)
             case _:
                 parser.print_help(sys.stderr)
