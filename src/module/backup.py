@@ -135,10 +135,8 @@ class Backup:
         remote = self.remote_to_remote(remote_dir)
         local = self.local_to_local(remote_dir)
         rclone.mkdir(local)
-        exludefile_remote = os.path.join(remote, Settings.EXCLUDEFILE_PATH)
 
         rclone.copy(remote, local, options=[
-            rclone.filter_from, exludefile_remote,
             rclone.progress,
             rclone.verbose
             ])
@@ -149,7 +147,7 @@ class Backup:
         """perform a rclone.copy of a local path to the remote"""
         if self.is_backup_dir():
             rclone.copy(self.local, self.remote, options=[
-                rclone.filter_from, self.exludefile_local,
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -160,7 +158,7 @@ class Backup:
         """perform a rclone.copy from the remote to local"""
         if self.is_backup_dir():
             rclone.copy(self.remote, self.local, options=[
-                rclone.filter_from, self.exludefile_remote,
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -173,7 +171,7 @@ class Backup:
         """
         if self.is_backup_dir():
             rclone.sync(self.local, self.remote, options=[
-                rclone.filter_from, self.exludefile_local,
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -186,7 +184,7 @@ class Backup:
         """
         if self.is_backup_dir():
             rclone.sync(self.remote, self.local, options=[
-                rclone.filter_from, self.exludefile_remote,
+                rclone.filter_from, Settings.EXCLUDEFILE_PATH,
                 rclone.progress,
                 rclone.verbose
                 ])
@@ -204,7 +202,6 @@ class Backup:
                 rclone.mkdir(self.remote)
                 rclone.bisync(self.local, self.remote, options=[
                     rclone.resync,
-                    rclone.filters_file, self.exludefile_local,
                     rclone.progress,
                     rclone.verbose
                     ])
@@ -212,7 +209,7 @@ class Backup:
             else:
                 try:
                     rclone.bisync(self.local, self.remote, options=[
-                        rclone.filters_file, self.exludefile_local,
+                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
                         rclone.progress,
                         rclone.verbose
                         ])
@@ -221,7 +218,7 @@ class Backup:
                     print('\nretry with --resync')
                     rclone.bisync(self.local, self.remote, options=[
                         rclone.resync,
-                        rclone.filters_file, self.exludefile_local,
+                        rclone.filters_file, Settings.EXCLUDEFILE_PATH,
                         rclone.progress,
                         rclone.verbose
                         ])
