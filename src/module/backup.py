@@ -58,7 +58,6 @@ class Backup:
         self.remote = self.local_to_remote(self.path)
 
         self.exludefile_local = self.local_to_local(Settings.EXCLUDEFILE_PATH)
-        self.exludefile_remote = os.path.join(self.remote, Settings.EXCLUDEFILE_PATH)
 
     def local_to_local(self, path: str) -> str:
         return os.path.join(self.path, path)
@@ -142,6 +141,14 @@ class Backup:
             ])
 
         self.create_localfile()
+
+    def deletebackup(self, remote_dir: str):
+        """delete a remote unibackup directory"""
+        remote = self.remote_to_remote(remote_dir)
+
+        rclone.purge(remote, options=[
+            rclone.verbose
+            ])
 
     def safepush(self):
         """perform a rclone.copy of a local path to the remote"""
@@ -237,6 +244,15 @@ class Backup:
             rclone.check(self.local, self.remote, options=[
                 '--combined', '-',
                 rclone.filter_from, Settings.EXCLUDEFILE_PATH
+                ])
+        else:
+            raise Exception("unibackup is not initialized in this directory")
+
+    def listexcluded(self):
+        if self.is_backup_dir():
+            print("list of exluded files")
+            rclone.ls(self.local, options=[
+                rclone.filter_from, self.exludefile_local
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")

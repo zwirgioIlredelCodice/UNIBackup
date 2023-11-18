@@ -14,6 +14,8 @@ BISYNC = 'bisync'
 CHECK = 'check'
 CLEANUP = 'cleanup'
 LSJSON = 'lsjson'
+LS = 'ls'
+PURGE = 'purge'
 
 # OPTIONS
 verbose = '--verbose'
@@ -215,3 +217,20 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
         newlist.append(newdict)
 
     return newlist
+
+
+def ls(path: str, options: list[str] = []):
+    """List the objects in the path with size and path."""
+    shell(command(LS, args=path, options=options))
+
+
+def purge(remotepath: str,  options: list[str] = []):
+    """
+    Remove the path and all of its contents. Note that
+    this does not obey include/exclude filters -
+    everything will be removed
+
+    Args:
+        remotepath: path to a remote or a remote directory to clean
+    """
+    shell(command(PURGE, args=remotepath, options=options))

@@ -19,16 +19,20 @@ if __name__ == "__main__":
     config_parser = subparsers.add_parser('config', help='configure unibackup')
     init_parser = subparsers.add_parser('init',
                                         help='initialize unibackup in the running direcory')
-    clone_parser = subparsers.add_parser('listbackups',
+    listbackups_parser = subparsers.add_parser('listbackups',
                                         help='list all unibackup direcory in remote')
     clone_parser = subparsers.add_parser('clone',
                                         help='clone a unibackup direcory in the running direcory')
     clone_parser.add_argument('-d', '--remote_dir', dest='remote_dir',
                               help='direcory name to clone')
+    deletebackup_parser = subparsers.add_parser('deletebackup',
+                                        help='delete a remote unibackup direcory')
+    deletebackup_parser.add_argument('-d', '--remote_dir', dest='remote_dir',
+                              help='direcory name to delete')
 
-    push_parser = subparsers.add_parser('safepush',
+    safepush_parser = subparsers.add_parser('safepush',
                                         help="sync the remote backup with the running direcory without deleting files")
-    pull_parser = subparsers.add_parser('safepull',
+    safepull_parser = subparsers.add_parser('safepull',
                                         help="sync local directory with the remote backup without deleting files")
     push_parser = subparsers.add_parser('push',
                                         help="sync the remote backup with the running direcory")
@@ -36,8 +40,10 @@ if __name__ == "__main__":
                                         help="sync local directory with the remote backup")
     sync_parser = subparsers.add_parser('sync',
                                         help="perform bidirectional synchronization between local and remote backup")
+    listexcluded_parser = subparsers.add_parser('listexcluded',
+                                        help="list all excluded files")
 
-    sync_parser = subparsers.add_parser('rclone',
+    rclone_parser = subparsers.add_parser('rclone',
                                         help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path for the current dir")
 
 
