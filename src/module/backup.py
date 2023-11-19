@@ -29,8 +29,9 @@ class Settings:
     EXCLUDEFILE_DEFAULT = '''
     # EXCLUDE
 
-    # do not touch the next line
+    # do not touch the next 2 lines
     - /.unibackup_local
+    - /.unibackup_ignore.md5
 
     # put your exclude here
     # - .git/ (example)
@@ -39,16 +40,16 @@ class Settings:
 
     class Localfile(module.utility.OptionFile):
         def __init__(self):
-            super().__init__(self.LOCALFILE_PATH)
+            super().__init__(Settings.LOCALFILE_PATH)
 
         def __del__(self):
             super().__del__()
 
         def is_first_sync(self) -> bool:
-            return super().get(self.first_sync)
+            return super().get(Settings.first_sync)
 
         def remember_sync(self):
-            super().set(self.first_sync, False)
+            super().set(Settings.first_sync, False)
 
 
 class Backup:
@@ -140,6 +141,7 @@ class Backup:
             rclone.verbose
             ])
 
+        self.__init__(local)
         self.create_localfile()
 
     def deletebackup(self, remote_dir: str):

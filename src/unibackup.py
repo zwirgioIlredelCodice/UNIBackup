@@ -40,8 +40,6 @@ if __name__ == "__main__":
                                         help="sync local directory with the remote backup")
     sync_parser = subparsers.add_parser('sync',
                                         help="perform bidirectional synchronization between local and remote backup")
-    listexcluded_parser = subparsers.add_parser('listexcluded',
-                                        help="list all excluded files")
 
     rclone_parser = subparsers.add_parser('rclone',
                                         help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path for the current dir")
@@ -73,9 +71,7 @@ if __name__ == "__main__":
                 case 'pull':
                     backup.pull(**kwargs)
                 case 'sync':
-                    backup.status(**kwargs)
-                case 'listexcluded':
-                    backup.listexcluded(**kwargs)
+                    backup.sync(**kwargs)
     else:
         match subcommand:
             case 'config':

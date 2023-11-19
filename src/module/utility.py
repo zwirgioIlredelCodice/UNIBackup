@@ -90,10 +90,10 @@ def shell(commands: list[str], get=False, check=True):
 class OptionFile:
     def __init__(self, filename: str):
         self.filename = filename
-        self.data = self.module.utility.json_file_load(filename)
+        self.data = json_file_load(filename)
 
     def __del__(self):
-        self.module.utility.json_file_save(self.filename, self.data)
+        json_file_save(self.filename, self.data)
 
     def get(self, name: str):
         return self.data[name]
