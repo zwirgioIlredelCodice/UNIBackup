@@ -247,12 +247,3 @@ class Backup:
                 ])
         else:
             raise Exception("unibackup is not initialized in this directory")
-
-    def listexcluded(self):
-        if self.is_backup_dir():
-            print("list of exluded files")
-            rclone.ls(self.local, options=[
-                rclone.filter_from, self.exludefile_local
-                ])
-        else:
-            raise Exception("unibackup is not initialized in this directory")

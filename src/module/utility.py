@@ -61,14 +61,14 @@ class colors:
 
 
 class prettyPrint:
-    def ok(text: str):
-        print(colors.fg.green, text, colors.reset)
+    def ok(*text):
+        print(colors.fg.green, *text, colors.reset)
 
-    def warn(text: str):
-        print(colors.fg.orange, text, colors.reset)
+    def warn(*text):
+        print(colors.fg.orange, *text, colors.reset)
 
-    def err(text: str):
-        print(colors.fg.red, text, colors.reset)
+    def err(*text):
+        print(colors.fg.red, *text, colors.reset)
 
 
 def shell(commands: list[str], get=False, check=True):

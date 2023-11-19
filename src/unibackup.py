@@ -23,11 +23,11 @@ if __name__ == "__main__":
                                         help='list all unibackup direcory in remote')
     clone_parser = subparsers.add_parser('clone',
                                         help='clone a unibackup direcory in the running direcory')
-    clone_parser.add_argument('-d', '--remote_dir', dest='remote_dir',
+    clone_parser.add_argument('-d', dest='remote_dir',
                               help='direcory name to clone')
     deletebackup_parser = subparsers.add_parser('deletebackup',
                                         help='delete a remote unibackup direcory')
-    deletebackup_parser.add_argument('-d', '--remote_dir', dest='remote_dir',
+    deletebackup_parser.add_argument('-d', dest='remote_dir',
                               help='direcory name to delete')
 
     safepush_parser = subparsers.add_parser('safepush',
@@ -46,8 +46,6 @@ if __name__ == "__main__":
     rclone_parser = subparsers.add_parser('rclone',
                                         help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path for the current dir")
 
-
-    # https://stackoverflow.com/questions/4575747/get-selected-subcommand-with-argparse
     if len(sys.argv) > 1 and sys.argv[1] == 'rclone':
         subcommand = 'rclone'
     else:
@@ -55,7 +53,7 @@ if __name__ == "__main__":
         subcommand = kwargs.pop('subparser')
 
 
-    if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync']:
+    if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync', 'listexcluded']:
         if not backup.is_configured():
             prettyPrint.err('unibackup is not configured')
             prettyPrint.err('run unibackup config')
@@ -76,6 +74,8 @@ if __name__ == "__main__":
                     backup.pull(**kwargs)
                 case 'sync':
                     backup.status(**kwargs)
+                case 'listexcluded':
+                    backup.listexcluded(**kwargs)
     else:
         match subcommand:
             case 'config':
@@ -89,6 +89,8 @@ if __name__ == "__main__":
                     backup.init(**kwargs)
             case 'clone':
                 backup.clone(**kwargs)
+            case 'deletebackup':
+                backup.deletebackup(**kwargs)
             case 'rclone':
                 topass = sys.argv[1:]
                 for i in range(len(topass)):
@@ -98,6 +100,7 @@ if __name__ == "__main__":
                         topass[i] = backup.remote
                 shell(topass)
             case _:
+                prettyPrint.err("subcommand", subcommand, "not found")
                 parser.print_help(sys.stderr)
 
     # globals()[kwargs.pop('subparser')](**kwargs)

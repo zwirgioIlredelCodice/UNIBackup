@@ -221,7 +221,7 @@ def lsjson(path: str, filters: list[str] = []) -> list[dict]:
 
 def ls(path: str, options: list[str] = []):
     """List the objects in the path with size and path."""
-    shell(command(LS, args=path, options=options))
+    shell(command(LS, args=[path], options=options))
 
 
 def purge(remotepath: str,  options: list[str] = []):
@@ -233,4 +233,4 @@ def purge(remotepath: str,  options: list[str] = []):
     Args:
         remotepath: path to a remote or a remote directory to clean
     """
-    shell(command(PURGE, args=remotepath, options=options))
+    shell(command(PURGE, args=[remotepath], options=options))
