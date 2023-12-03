@@ -96,7 +96,6 @@ if __name__ == "__main__":
                         topass[i] = backup.remote
                 shell(topass)
             case _:
-                prettyPrint.err("subcommand", subcommand, "not found")
                 parser.print_help(sys.stderr)
 
     # globals()[kwargs.pop('subparser')](**kwargs)
