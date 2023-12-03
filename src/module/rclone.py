@@ -24,6 +24,7 @@ filter_from = '--filter-from'
 filters_file = '--filters-file'
 resync = '--resync'
 
+
 def command(kind: str | list[str], args=[], options=[]) -> list[str]:
     """ assemble a rclone command
 

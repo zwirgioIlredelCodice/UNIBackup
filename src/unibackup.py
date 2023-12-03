@@ -14,35 +14,61 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='subparser')
 
-    status_parser = subparsers.add_parser('status',
-                                          help='show the status of the running direcory')
-    config_parser = subparsers.add_parser('config', help='configure unibackup')
-    init_parser = subparsers.add_parser('init',
-                                        help='initialize unibackup in the running direcory')
-    listbackups_parser = subparsers.add_parser('listbackups',
-                                        help='list all unibackup direcory in remote')
-    clone_parser = subparsers.add_parser('clone',
-                                        help='clone a unibackup direcory in the running direcory')
-    clone_parser.add_argument('-d', dest='remote_dir',
-                              help='direcory name to clone')
-    deletebackup_parser = subparsers.add_parser('deletebackup',
-                                        help='delete a remote unibackup direcory')
-    deletebackup_parser.add_argument('-d', dest='remote_dir',
-                              help='direcory name to delete')
+    status_parser = subparsers.add_parser(
+        'status',
+        help='Show the working tree status')
 
-    safepush_parser = subparsers.add_parser('safepush',
-                                        help="sync the remote backup with the running direcory without deleting files")
-    safepull_parser = subparsers.add_parser('safepull',
-                                        help="sync local directory with the remote backup without deleting files")
-    push_parser = subparsers.add_parser('push',
-                                        help="sync the remote backup with the running direcory")
-    pull_parser = subparsers.add_parser('pull',
-                                        help="sync local directory with the remote backup")
-    sync_parser = subparsers.add_parser('sync',
-                                        help="perform bidirectional synchronization between local and remote backup")
+    config_parser = subparsers.add_parser(
+        'config',
+        help='configure unibackup')
 
-    rclone_parser = subparsers.add_parser('rclone',
-                                        help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path for the current dir")
+    init_parser = subparsers.add_parser(
+        'init',
+        help='initialize an exisiting directory as a unibackup direcory')
+
+    listbackups_parser = subparsers.add_parser(
+        'listbackups',
+        help='list all unibackup direcory remotly saved')
+
+    clone_parser = subparsers.add_parser(
+        'clone',
+        help='clone a unibackup direcory into a new directory')
+    clone_parser.add_argument(
+        '-d',
+        dest='remote_dir',
+        help='direcory name to clone')
+
+    deletebackup_parser = subparsers.add_parser(
+        'deletebackup',
+        help='delete a remotly saved unibackup directory')
+    deletebackup_parser.add_argument(
+        '-d',
+        dest='remote_dir',
+        help='direcory name to delete')
+
+    safepush_parser = subparsers.add_parser(
+        'safepush',
+        help="sync remote with local without deleting files in remote")
+
+    safepull_parser = subparsers.add_parser(
+        'safepull',
+        help="sync local with remote without deleting files in local")
+
+    push_parser = subparsers.add_parser(
+        'push',
+        help="sync remote with local")
+
+    pull_parser = subparsers.add_parser(
+        'pull',
+        help="sync local with remote")
+
+    sync_parser = subparsers.add_parser(
+        'sync',
+        help="perform bidirectional synchronization between local and remote")
+
+    rclone_parser = subparsers.add_parser(
+        'rclone',
+        help="call rclone with argument provided, replce LOCAL and REMOTE with unibackup equivalent path")
 
     if len(sys.argv) > 1 and sys.argv[1] == 'rclone':
         subcommand = 'rclone'
@@ -50,8 +76,7 @@ if __name__ == "__main__":
         kwargs = vars(parser.parse_args())
         subcommand = kwargs.pop('subparser')
 
-
-    if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync', 'listexcluded']:
+    if subcommand in ['status', 'safepush', 'safepull', 'push', 'pull', 'sync']:
         if not backup.is_configured():
             prettyPrint.err('unibackup is not configured')
             prettyPrint.err('run unibackup config')
@@ -97,5 +122,3 @@ if __name__ == "__main__":
                 shell(topass)
             case _:
                 parser.print_help(sys.stderr)
-
-    # globals()[kwargs.pop('subparser')](**kwargs)

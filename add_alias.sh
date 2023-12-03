@@ -27,7 +27,7 @@ else
 
         echo '# alias for unibackup' >> $HOME/.bashrc
         echo $UNIBACKUP_ALIAS >> $HOME/.bashrc
-        printf '\nclose and reopen the terminal use unibackup as a command\n'
+        printf '\nclose and reopen the terminal to use unibackup as a command\n'
     else
         echo 'run this script in the UNIBackup direcotory'
     fi
