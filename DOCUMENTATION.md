@@ -6,6 +6,7 @@
 
 
 <a id="lessico"></a>
+
 # Lessico
 
 * __unibackup directory__ è una cartella propriamente inizializzata per essere usata con __unibackup__, l'equivalente di una cartella (repository di git) inizializzata con `git init .`
@@ -14,6 +15,7 @@
 
 
 <a id="come_funziona"></a>
+
 # Come funziona
 
 Unibackup è fodamentalmente un wrapper per [rclone](https://rclone.org/), quindi per ogni comando di unibackup corrispondono uno o più comandi di rclone, questi comandi vengono eseguiti come processi figli da unibackup tramite la funzione `shell` in `src/module/ulility.py`.
@@ -27,10 +29,11 @@ questi file vengono creati all'inizializzata di una cartella con unibackup, ovve
 
 * `.unibackup_local` file con al suo interno impostazioni non utilizzabili tra dispositivi diversi
 
-* `.unibackup_ignore` file con regole di esclusione/inclusione di file dai backups, ulteriore spiegazione più sotto
+* `.unibackup_ignore` file con regole di esclusione/inclusione di file dai backups la sintassi di questo file è spiengata nella [documentazione di rclone --files-from](https://rclone.org/filtering/#filter-from-read-filtering-patterns-from-a-file)
 
 
 <a id="utilizzo"></a>
+
 # Utilizzo
 
 i sono simili a quelli di git sia per la sintassi che per quello che fanno
@@ -96,7 +99,7 @@ unibackup init
 unibackup.py clone -d REMOTE_DIR
 ```
 
-clona una __unibackup directory__ nella cartella dove viene eseguito il comando, `REMOTE_DIR` è il nome della __remote__ da clonare
+clona una __remote__ nella cartella dove viene eseguito il comando, `REMOTE_DIR` è il nome della __remote__ da clonare
 
 esempio
 
@@ -118,10 +121,105 @@ clono `appunti-da-salvare`
 unibackup clone -d appunti-da-salvare
 ```
 
+### deletebackup
+
+```bash
+unibackup.py deletebackup -d REMOTE_DIR
+```
+
+cancella una __remote__ nella cartella dove viene eseguito il comando, `REMOTE_DIR` è il nome della __remote__ da cancellare
+
 ## informazioni
 
-TODO:
+### status
+
+```bash
+unibackup status
+```
+
+fa vedere lo stato della __unibackup directory__ in cui viene eseguito,
+ovvero fa vedere quali file sono stati aggiunti/cancellati/cambiati in __local__ rispetto a __remote__
+
+### listbackups
+
+```bash
+unibackup listbackups
+```
+
+fa vedere la lista di __unibackup directory__ salvate in OneDrive
 
 ## sincronizzazione
 
-TODO:
+
+### safepush
+
+```bash
+unibackup safepush
+```
+
+aggiorna il contenuto di __remote__ rispetto alla __unibackup directory__
+in cui viene eseguito, __i file cancellati in local non vengono cancellati in remote__
+
+### push
+
+```bash
+unibackup push
+```
+
+aggiorna il contenuto di __remote__ rispetto alla __unibackup directory__
+in cui viene eseguito,
+
+### safepull
+
+```bash
+unibackup safepull
+```
+
+aggiorna il contenuto della __unibackup directory__
+in cui viene eseguito rispetto a __remote__, __i file cancellati in remote non vengono cancellati in local__
+
+### pull
+
+```bash
+unibackup pull
+```
+
+aggiorna il contenuto della __unibackup directory__
+in cui viene eseguito rispetto a __remote__
+
+
+### sync
+
+```bash
+unibackup sync
+```
+
+aggiorna __local__ e __remote__ dell'__unibackup directory__ in cui viene eseguito prendendo le versioni dei file più nuove da entrambe.  
+__usa deli comandi sperimentali, usare a priprio rischio e pericolo__
+
+Questo comando può tornare utile quando ci sono nouve versioni di file sia in __local__ che in __remote__
+
+
+## interfacciarsi con rclone
+
+```bash
+unibackup rclone RCLONE_COMMAND
+```
+
+chiama __rclone__ con i comandi `RCLONE_COMMAND`, [lista di comandi di rclone](https://rclone.org/commands/)
+
+unibackup sostituisce i seguenti termini in `RCLONE_COMMAND`_
+
+* sostituisce __REMOTE__ con la path di __remote__ della __unibackup directory__ in cui viene eseguito
+* sostituisce __LOCAL__ con la path di __LOCAL__ della __unibackup directory__ in cui viene eseguito
+
+### esempi
+
+clona `appunti-da-salvare` lista tutte le cartelle in `appunti-da-salvare` nel cloud e quelle in locale
+```bash
+unibackup clone -d appunti-da-salvare
+cd appunti-da-salvare
+
+unibackup rclone lsd REMOTE # it runs rclone lsd unibackup:unibackup/current/appunti-da-salvare
+unibackup rclone lsd LOCAL  # it runs rclone lsd /home/fabio/appunti-da-salvare
+```
