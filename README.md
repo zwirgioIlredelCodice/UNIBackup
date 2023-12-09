@@ -35,6 +35,12 @@ Now you can run `unibackup` as a command in the terminal.
 If you do't want/cant run the bash script you can run this program with `python3 {path_to_UNIBackup_repo/src/unibackup.py}`
 
 
+### Update
+
+1. open a terminal in the repo directory and run the "installation" script that add unibackup as an alias in the `.bashrc` files
+    * run `git pull`
+
+
 ## Usage
 
 in the terminal
