@@ -27,15 +27,15 @@ class Settings:
 
     EXCLUDEFILE_NAME = '.unibackup_ignore'
     EXCLUDEFILE_DEFAULT = '''
-    # EXCLUDE
+# EXCLUDE
 
-    # do not touch the next 2 lines
-    - /.unibackup_local
-    - /.unibackup_ignore.md5
+# do not touch the next 2 lines
+- /.unibackup_local
+- /.unibackup_ignore.md5
 
-    # put your exclude here
-    # - .git/ (example)
-    '''
+# put your exclude here
+# - .git/ (example)
+'''
     EXCLUDEFILE_PATH = EXCLUDEFILE_NAME
 
     class Localfile(module.utility.OptionFile):
