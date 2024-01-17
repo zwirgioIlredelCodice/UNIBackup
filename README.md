@@ -49,9 +49,9 @@ in the terminal
 $ unibackup
 ```
 
-see `unibackup --help` for help
-
-__for an in depth tutorial see the [documentation](DOCUMENTATION.md) file__
+* see `unibackup --help` for helps
+* __for get started tutorial see the [tutoral](TUTORIAL.md)__
+* __for an in depth look see the [documentation](DOCUMENTATION.md) file__
 
 
 ## Contributing

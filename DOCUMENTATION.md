@@ -2,7 +2,7 @@
 **[Come funziona](#come_funziona)**<br>
 **[Lessico](#lessico)**<br>
 **[Utilizzo](#utilizzo)**<br>
-
+**[Errori e warnings](#errori_e_warnings)**<br>
 
 
 <a id="lessico"></a>
@@ -211,7 +211,7 @@ chiama __rclone__ con i comandi `RCLONE_COMMAND`, [lista di comandi di rclone](h
 unibackup sostituisce i seguenti termini in `RCLONE_COMMAND`_
 
 * sostituisce __REMOTE__ con la path di __remote__ della __unibackup directory__ in cui viene eseguito
-* sostituisce __LOCAL__ con la path di __LOCAL__ della __unibackup directory__ in cui viene eseguito
+* sostituisce __LOCAL__ con la path di __local__ della __unibackup directory__ in cui viene eseguito
 
 ### esempi
 
@@ -223,3 +223,12 @@ cd appunti-da-salvare
 unibackup rclone lsd REMOTE # it runs rclone lsd unibackup:unibackup/current/appunti-da-salvare
 unibackup rclone lsd LOCAL  # it runs rclone lsd /home/fabio/appunti-da-salvare
 ```
+
+
+<a id="errori_e_warnings"></a>
+
+# Errori e warnings
+
+* se rclone ha problemi ad accedere perchè Onedrive gli ha revocato i permessi rieseguire la configurazione con `unibackup config`
+
+* in molte occasioni rclone da errori che non compromettono il funzionamento e quindi possono essere ignorati come ad esempio con l'eseguzione di `unibackup status` in output `'ERROR : file.txt: file not in OneDrive root 'unibackup/current/myfolder'` (quando `myfile.txt` è presente solo il __remote__ e non in __local__ e viceversa)
