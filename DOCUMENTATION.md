@@ -2,6 +2,7 @@
 **[Come funziona](#come_funziona)**<br>
 **[Lessico](#lessico)**<br>
 **[Utilizzo](#utilizzo)**<br>
+**[Best practices](best_practices)**<br>
 **[Errori e warnings](#errori_e_warnings)**<br>
 
 
@@ -224,6 +225,17 @@ unibackup rclone lsd REMOTE # it runs rclone lsd unibackup:unibackup/current/app
 unibackup rclone lsd LOCAL  # it runs rclone lsd /home/fabio/appunti-da-salvare
 ```
 
+
+<a id="best_practices"></a>
+
+# Best practices
+
+* questo programma è stato creato per fare backups di appunti e materiale didattico quindi sconsigia di fare backups di cartelle contenenti
+artfatti di compilazione, cartelle .git ed altre cartelle con tantissimi file di poca importanza per non incappare in problematiche. Questi
+file si possono escludere tramite il file `.unibackup_ignore`.
+* Si consigia di mantenere il numero di file di un backup inferiore ai 5000, in quanto quando si vanno a spostare grandi numeri di file
+Onedrive limita la velocità di trasperimento fino a bloccarla completamente, in questo caso si può interrompere il programma e rieseguirlo
+dopo alcuni minuti, il trasferimento riparterà da dove interrotto.
 
 <a id="errori_e_warnings"></a>
 
