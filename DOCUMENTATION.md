@@ -2,7 +2,7 @@
 **[Come funziona](#come_funziona)**<br>
 **[Lessico](#lessico)**<br>
 **[Utilizzo](#utilizzo)**<br>
-**[Best practices](best_practices)**<br>
+**[Best practices](#best_practices)**<br>
 **[Errori e warnings](#errori_e_warnings)**<br>
 
 
